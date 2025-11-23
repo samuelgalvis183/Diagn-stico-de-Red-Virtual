@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Red Virtual</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f3f3f3; margin: 0; padding: 0; }
+        .container { max-width: 480px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 0 8px #bbb; padding: 20px; }
+        h1 { color: #314982; }
+        .scenario { margin: 24px 0; }
+        input[type="text"] { width: 97%; padding: 8px; margin-bottom: 12px;}
+        button { padding: 10px 24px; background: #314982; border: none; color: white; border-radius: 5px; cursor: pointer; }
+        .feedback { margin: 10px 0; font-weight: bold; color: #308040; }
+        .wrong { color: #C0392B; }
+        @media (max-width: 600px) { .container { margin:10px; padding:10px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diagnóstico de Red Virtual</h1>
+        <div id="instructions">
+            Bienvenido. En cada escenario tendrás una situación de fallo en la red. Escribe la causa o solución más probable en el campo de respuesta y presiona "Enviar". ¡Buena suerte!
+        </div>
+        <div class="scenario" id="scenario"></div>
+        <input type="text" id="answer" placeholder="Escribe tu diagnóstico o solución aquí...">
+        <button onclick="checkAnswer()">Enviar</button>
+        <div class="feedback" id="feedback"></div>
+    </div>
+    <script>
+    // Escenarios de diagnóstico y sus soluciones aceptadas
+    const scenarios = [
+        {
+            question: 'Escenario 1: Un usuario informa que no puede acceder a internet. El icono de red muestra "Sin conexión" y al ejecutar "ipconfig" aparece "Medios desconectados". ¿Cuál es la causa más probable?',
+            answers: ['cable desconectado', 'el cable está desconectado', 'cable de red desconectado']
+        },
+        {
+            question: 'Escenario 2: Dos computadoras en la misma red local no pueden "pinguearse" entre sí. Ambos tienen direcciones IP similares pero máscaras de subred distintas (255.255.255.0 vs 255.255.0.0). ¿Qué problema hay?',
+            answers: ['máscara de subred incorrecta', 'configuración de máscara incorrecta', 'máscara incorrecta']
+        },
+        {
+            question: 'Escenario 3: Todos los equipos navegan lento. Al examinar la red, observas que un switch tiene luces intermitentes constantemente y escuchas que se calienta mucho. ¿Qué está ocurriendo?',
+            answers: ['bucle de red', 'loop de red', 'bucle', 'loop']
+        }
+    ];
+
+    let current = 0;
+
+    function loadScenario() {
+        document.getElementById('scenario').textContent = scenarios[current].question;
+        document.getElementById('answer').value = '';
+        document.getElementById('feedback').textContent = '';
+        document.getElementById('feedback').classList.remove('wrong');
+    }
+
+    function checkAnswer() {
+        const user = document.getElementById('answer').value.trim().toLowerCase();
+        const valid = scenarios[current].answers.some(ans => user.includes(ans));
+        if (valid) {
+            document.getElementById('feedback').textContent = '¡Correcto!';
+            current++;
+            if (current < scenarios.length) {
+                setTimeout(loadScenario, 1100);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('scenario').textContent = '¡Felicidades! Has completado todos los escenarios.';
+                    document.getElementById('answer').style.display = 'none';
+                    document.querySelector("button").style.display = 'none';
+                    document.getElementById('feedback').textContent = '';
+                }, 1100);
+            }
+        } else {
+            document.getElementById('feedback').textContent = 'Respuesta incorrecta. Intenta de nuevo.';
+            document.getElementById('feedback').classList.add('wrong');
+        }
+    }
+
+    // Iniciar
+    loadScenario();
+    </script>
+</body>
+</html>
